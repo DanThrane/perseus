@@ -4,7 +4,7 @@ SUPPRESSINSTALL=FALSE
 
 PERSEUS_BUILD_JS=build/perseus.js
 PERSEUS_BUILD_CSS=build/perseus.css
-PERSEUS_DEMO_BUILD_JS=build/demo-perseus.js
+PERSEUS_DEMO_BUILD_JS=demo
 PERSEUS_NODE_BUILD_JS=build/node-perseus.js
 PERSEUS_EDITOR_BUILD_JS=build/editor-perseus.js
 PERSEUS_VERSION_FILE=build/perseus-item-version.js
@@ -51,12 +51,6 @@ $(PERSEUS_NODE_BUILD_JS): install
 $(PERSEUS_DEMO_BUILD_JS): install
 	mkdir -p build
 	NODE_ENV=production INCLUDE_EDITORS=true ./node_modules/.bin/webpack --config webpack.config.demo-perseus.js
-	mv $@ $@.tmp
-	echo '/*! Demo perseus | http://github.com/Khan/perseus */' > $@
-	echo "// commit `git rev-parse HEAD`" >> $@
-	echo "// branch `git rev-parse --abbrev-ref HEAD`" >> $@
-	cat $@.tmp >> $@
-	rm $@.tmp
 
 $(PERSEUS_EDITOR_BUILD_JS): install
 	mkdir -p build
@@ -91,61 +85,6 @@ server: install server-offline
 server-offline:
 	(sleep 1; echo; echo http://localhost:$(PORT)/) &
 	INCLUDE_EDITORS=true __DEV__=true ./node_modules/.bin/webpack-dev-server --config webpack.config.demo-perseus.js --port $(PORT) --output-public-path build/ --devtool inline-source-map
-
-demo:
-	if [ -z $$TRAVIS ]; then echo "make demo must be run on travis"; exit 1; fi
-	git remote set-branches --add origin gh-pages # Travis only contains Master, so gh-pages must be added
-	git fetch origin
-	git checkout -B gh-pages origin/gh-pages
-	git reset --hard origin/master
-	make build/demo-perseus.js
-	git add -f build/demo-perseus.js
-	git config user.name "Emily Eisenberg" # Git requires an author for the commit
-	git config user.email "emily@khanacademy.org"
-	git commit -nm 'demo update'
-	git checkout origin/master
-	# We now need to push using a specific SSH key, which is authorized to edit the repository
-	ssh-agent bash -c 'ssh-add travis_deploy_rsa; git push -f git@github.com:Khan/perseus.git gh-pages:gh-pages'
-
-# Pull submodules if they are empty.
-# This should make first-time installation easier.
-# We don't pull them if they are not empty because you might have
-# intentionally added commits to them, and it would be weird for
-# running the server to mess around with your git status.
-# (we just test kmath here as a fun sample repo. #yolo)
-ifeq ("$(wildcard kmath/package.json)", "")
-SUBMODULE_UPDATE := git submodule update --init
-else
-SUBMODULE_UPDATE := @echo "submodules already initialized"
-endif
-
-install:
-ifneq ("$(SUPPRESSINSTALL)","TRUE")
-	$(SUBMODULE_UPDATE)
-	npm install
-	rm -rf node_modules/react-components
-	ln -s ../react-components/js node_modules/react-components
-	rm -rf node_modules/kmath
-	ln -s ../kmath node_modules/kmath
-	rm -rf node_modules/simple-markdown
-	ln -s ../simple-markdown node_modules/simple-markdown
-# very hacks to prevent simple-markdown from pulling in a separate version of react.
-# basically, we need its require("react") to resolve to perseus' react, instead of
-# one in its node_modules (yuck!) (same for "underscore")
-# TODO(aria): cry
-	rm -rf simple-markdown/node_modules
-	rm -rf kmath/node_modules
-	rm -rf react-components/node_modules
-# Use --production so that math-input doesn't install any devDepedencies, which
-# include React and friends.
-	cd math-input && npm install --production && cd ..
-
-# Cleans up node modules in math-input that are added through npm install in the
-# submodule, but shouldn't be used because Perseus's copy should be used instead.
-	rm -rf math-input/node_modules/react
-	rm -rf math-input/node_modules/react-dom
-	rm -rf math-input/node_modules/react-addons-*
-endif
 
 clean:
 	-rm -rf build/*

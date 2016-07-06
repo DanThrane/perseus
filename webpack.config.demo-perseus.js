@@ -2,6 +2,7 @@ module.exports = {
     entry: {
         "demo-perseus": "./src/demo-perseus.js",
         "frame-perseus": "./src/perseus-frame.js",
+        "test-renderer": "./src/test-renderer.js",
     },
     output: {
         path: "./build",

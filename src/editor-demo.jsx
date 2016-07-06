@@ -12,6 +12,7 @@ const StatefulEditorPage = require('./stateful-editor-page.jsx');
 const EditorPage = require('./editor-page.jsx');
 const Util = require('./util.js');
 const Renderability = require('./renderability.jsx');
+var $ = require('jquery');
 
 const enabledFeatures = {
     highlight: true,
@@ -92,6 +93,17 @@ const EditorDemo = React.createClass({
 
     getEditorProps() {
         const xomManatee = !!localStorage.xomManatee;
+        
+        // TODO This is of course not very pretty. 
+        var frameSource = window.frameSource;
+        if (window.frameSource === undefined) {
+            $.ajax({
+                url: window.rootUrl + "perseusPlayground/frame",
+                success: function(html) { frameSource = html; },
+                async:false
+            });
+            window.frameSource = frameSource;
+        }
 
         return {
             ...this.props.question,
@@ -127,47 +139,7 @@ const EditorDemo = React.createClass({
                 this.setState({ deviceType: device });
             },
             previewDevice: this.state.deviceType,
-            frameSource: `<!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="utf-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=0">
-
-                    <link rel="stylesheet" type="text/css" href="stylesheets/local-only/khan-site.css" />
-                    <link rel="stylesheet" type="text/css" href="stylesheets/local-only/khan-exercise.css" />
-                    <link rel="stylesheet" type="text/css" href="lib/katex/katex.css" />
-                    <link rel="stylesheet" type="text/css" href="lib/font-awesome.min.css">
-                    <link rel="stylesheet" type="text/css" href="lib/mathquill/mathquill.css" />
-                    <link rel="stylesheet" type="text/css" href="stylesheets/perseus-admin-package/devices.min.css" />
-
-                    <link rel="stylesheet/less" type="text/css" href="stylesheets/exercise-content-package/perseus.less" />
-                    <link rel="stylesheet/less" type="text/css" href="stylesheets/perseus-admin-package/editor.less" />
-                    <style>
-                        body {
-                            min-width: 0 !important;
-                            /* overrides body { min-width: 1000px; } in khan-site.css */
-                        }
-                    </style>
-
-                    <script>less = {env: 'development', logLevel: 1};</script>
-                    <script src="lib/less.js"></script>
-                </head>
-                <body>
-                    <div id="content-container">
-                    </div>
-                    <script src="lib/babel-polyfills.min.js"></script>
-                    <script src="lib/jquery.js"></script>
-                    <script src="lib/underscore.js"></script>
-                    <script src="lib/react-with-addons.js"></script>
-                    <script src="lib/mathjax/2.1/MathJax.js?config=KAthJax-f3c5d145ec6d4e408f74f28e1aad49db&amp;delayStartupUntil=configured"></script>
-                    <script src="lib/katex/katex.js"></script>
-                    <script src="lib/mathquill/mathquill-basic.js"></script>
-                    <script src="lib/kas.js"></script>
-                    <script src="lib/i18n.js"></script>
-                    <script src="lib/jquery.qtip.js"></script>
-                    <script src="build/frame-perseus.js"></script>
-                </body>
-            </html>`,
+            frameSource: frameSource,
         };
     },
 
@@ -189,15 +161,6 @@ const EditorDemo = React.createClass({
         return (
             <div id="perseus-index">
                 <div className="extras">
-                    <button onClick={this.serialize}>serialize</button>{' '}
-                    <button onClick={this.scorePreview}>score</button>{' '}
-                    <button onClick={this.permalink}>permalink</button>{' '}
-                    <button onClick={this.viewRendered}>view rendered</button>{' '}
-                    <button onClick={this.inputVersion}>contains only inputs?</button>{' '}
-                    <button onClick={this.saveWarnings}>save warnings</button>{' '}
-                    <span>Seed:{this.props.problemNum} </span>{' '}
-                    <span>Features:{featuresDisplay}</span>{' '}
-                    <span>Scratchpad:{Khan.scratchpad.enabled ? 'enabled' : 'disabled'}</span>
                 </div>
                 <StatefulEditorPage key={this.props.question} ref="editor" {...editorProps}/>
             </div>

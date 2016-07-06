@@ -137,7 +137,7 @@ const RendererDemo = React.createClass({
                     <div className="extras" style={{margin: 20}}>
                         <button onClick={this.onScore}>Score</button>
                         <span style={{marginLeft: 15}}>
-                            Scratchpad
+                            Test test test Scratchpad
                             {scratchpadEnabled ? '' : 'not '}
                             available
                         </span>

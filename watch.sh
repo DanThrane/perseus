@@ -10,6 +10,6 @@ trap 'kill $(jobs -pr)' SIGINT SIGTERM EXIT
 
 WEBPACK=./node_modules/.bin/webpack
 
-NODE_ENV=production $WEBPACK --watch &
-NODE_ENV=production INCLUDE_EDITORS=true $WEBPACK --watch
+NODE_ENV=production $WEBPACK --watch --config webpack.config.demo-perseus.js &
+NODE_ENV=production INCLUDE_EDITORS=true $WEBPACK --watch --config webpack.config.demo-perseus.js
 # TODO(emily): watch for LESS changes, and build perseus.css
