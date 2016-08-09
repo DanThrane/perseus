@@ -1,5 +1,5 @@
 // Perseus Version File
-// commit 985f9bc74fc3ede8f5da7666062d302637b08d54
+// commit 0292e1990ca0139190da3addf2508b2d81be7b62
 // branch master
 // @generated
 /* eslint-disable comma-dangle */
@@ -138,6 +138,10 @@ module.exports = {
         "minor": 1
     },
     "video": {
+        "major": 0,
+        "minor": 0
+    },
+    "interactivevideo": {
         "major": 0,
         "minor": 0
     },

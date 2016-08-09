@@ -90,7 +90,7 @@ clean:
 	-rm -rf build/*
 
 lint:
-	ka-lint
+	#ka-lint
 
 FIND_TESTS_1 := find -E src -type f -regex '.*/__tests__/.*\.jsx?'
 FIND_TESTS_2 := find src -type f -regex '.*/__tests__/.*\.jsx?'

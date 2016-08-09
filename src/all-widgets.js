@@ -79,6 +79,8 @@ _.each([
      __EDITOR__ && require("./widgets/unit-editor.jsx")],
     [require("./widgets/video.jsx"),
      __EDITOR__ && require("./widgets/video-editor.jsx")],
+    [require("./widgets/interactive-video.jsx"),
+     __EDITOR__ && require("./widgets/interactive-video-editor.jsx")],
     // These widgets are only used when testing things, so remove them in the
     // non-editor bundle.
     __EDITOR__ && [require("./widgets/example-graphie-widget.jsx"),
@@ -86,7 +88,7 @@ _.each([
     __EDITOR__ && [require("./widgets/example-widget.jsx"),
                    require("./widgets/example-widget-editor.jsx")],
     __EDITOR__ && [require("./widgets/simple-markdown-tester.jsx"),
-                   require("./widgets/simple-markdown-tester-editor.jsx")],
+                   require("./widgets/simple-markdown-tester-editor.jsx")], 
 ], function(data) {
     data && Widgets.register(
         data[0].name, /* widget */ data[0], /* editor */ data[1]);
